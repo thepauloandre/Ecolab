@@ -1,24 +1,78 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="UTF-8">
-    <title>Horta AR</title>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <title>Horta 3D</title>
+  <style>
+    body { margin: 0; overflow: hidden; background: #e6ffe6; }
+    canvas { display: block; touch-action: none; }
+  </style>
+</head>
+<body>
 
-    <!-- Model Viewer (biblioteca oficial do Google para AR) -->
-    <script type="module"
-      src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js">
-    </script>
-  </head>
+<script type="module">
+  import * as THREE from 'https://unpkg.com/three@0.160/build/three.module.js';
+  import { GLTFLoader } from 'https://unpkg.com/three@0.160/examples/jsm/loaders/GLTFLoader.js';
+  import { OrbitControls } from 'https://unpkg.com/three@0.160/examples/jsm/controls/OrbitControls.js';
 
-  <body style="margin:0;">
+  // Cena e câmera
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+  camera.position.set(0, 1.5, 3);
 
-    <model-viewer
-      src="https://raw.githubusercontent.com/thepauloandre/Ecolab/d3935ef96442477a901322771712673ec336df2f/Crops.glb"
-      ar
-      ar-modes="webxr scene-viewer quick-look"
-      camera-controls
-      auto-rotate
-      style="width: 100%; height: 100vh;">
-    </model-viewer>
+  // Renderizador
+  const renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setPixelRatio(window.devicePixelRatio);
+  document.body.appendChild(renderer.domElement);
 
-  </body>
+  // Luzes
+  const light = new THREE.HemisphereLight(0xffffff, 0x444444, 1.2);
+  scene.add(light);
+
+  const dirLight = new THREE.DirectionalLight(0xffffff, 1);
+  dirLight.position.set(5, 10, 7);
+  scene.add(dirLight);
+
+  // Controles (funciona no celular!)
+  const controls = new OrbitControls(camera, renderer.domElement);
+  controls.enableDamping = true;
+  controls.dampingFactor = 0.05;
+  controls.screenSpacePanning = false;
+  controls.minDistance = 1;
+  controls.maxDistance = 10;
+
+  // Carregar modelo
+  const loader = new GLTFLoader();
+  loader.load(
+    "https://raw.githubusercontent.com/thepauloandre/Ecolab/d3935ef96442477a901322771712673ec336df2f/Crops.glb",
+    function (gltf) {
+      const model = gltf.scene;
+      model.scale.set(1, 1, 1);
+      scene.add(model);
+    },
+    undefined,
+    function (error) {
+      console.error("Erro ao carregar o modelo:", error);
+    }
+  );
+
+  // Loop de animação
+  function animate() {
+    requestAnimationFrame(animate);
+    controls.update();
+    renderer.render(scene, camera);
+  }
+
+  animate();
+
+  // Ajuste ao redimensionar a tela
+  window.addEventListener("resize", () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  });
+</script>
+
+</body>
+</html>
