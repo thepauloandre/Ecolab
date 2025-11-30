@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Horta AR</title>
+
+    <!-- Model Viewer (biblioteca oficial do Google para AR) -->
+    <script type="module"
+      src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js">
+    </script>
+  </head>
+
+  <body style="margin:0;">
+
+    <model-viewer
+      src="https://raw.githubusercontent.com/thepauloandre/Ecolab/d3935ef96442477a901322771712673ec336df2f/Crops.glb"
+      ar
+      ar-modes="webxr scene-viewer quick-look"
+      camera-controls
+      auto-rotate
+      style="width: 100%; height: 100vh;">
+    </model-viewer>
+
+  </body>
